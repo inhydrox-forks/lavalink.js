@@ -34,7 +34,7 @@ export interface BaseNodeOptions {
 }
 
 export default abstract class BaseNode extends EventEmitter {
-  public abstract send: (guildID: string, packet: any) => Promise<any>;
+  public abstract send: (shardId: number, packet: any, important: boolean) => Promise<any>;
 
   public password: string;
   public userID: string;

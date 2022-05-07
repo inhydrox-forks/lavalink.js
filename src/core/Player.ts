@@ -98,12 +98,14 @@ export interface JoinOptions {
 export default class Player<T extends BaseNode = BaseNode> extends EventEmitter {
   public readonly node: T;
   public guildID: string;
+  public shardId: number | null;
   public status: Status = Status.INSTANTIATED;
 
   constructor(node: T, guildID: string) {
     super();
     this.node = node;
     this.guildID = guildID;
+    this.shardId = null;
 
     this.on('event', (d) => {
       switch (d.type) {
@@ -167,19 +169,23 @@ export default class Player<T extends BaseNode = BaseNode> extends EventEmitter 
     return this.join(null);
   }
 
-  public join(channel: string | null, { deaf = false, mute = false }: JoinOptions = {}) {
+  public setShard(shardId: number) {
+    this.shardId = shardId;
+  }
+
+  public join(channelId: string | null, { deaf = false, mute = false }: JoinOptions = {}) {
     this.node.voiceServers.delete(this.guildID);
     this.node.voiceStates.delete(this.guildID);
 
-    return this.node.send(this.guildID, {
+    return this.node.send(this.shardId!, {
       op: 4,
       d: {
         guild_id: this.guildID,
-        channel_id: channel,
+        channel_id: channelId,
         self_deaf: deaf,
         self_mute: mute,
       },
-    })
+    }, true)
   }
 
   public async play(track: string | Track, { start, end, noReplace, pause }: PlayerOptions = {}) {
