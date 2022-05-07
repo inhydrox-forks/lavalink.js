@@ -42,7 +42,7 @@ export default class ClusterNode extends BaseNode {
     return this.cluster.emit(name, ...args);
   }
 
-  public send = (guildID: string, pk: object): Promise<any> => this.cluster.send(guildID, pk);
+  public send = (shardId: number, pk: object, important: boolean): Promise<any> => this.cluster.send(shardId, pk, important);
 
   public async destroy(code?: number, data?: string): Promise<void> {
     await super.destroy(code, data);
